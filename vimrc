@@ -52,7 +52,7 @@ set viminfo=<100,'100,/50,:100,h,r$TEMP:,s10
 " 外观设置
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set number                      " 显示行号
-set relativenumber              " 行号以相对当前行的方式显示，方便跳转
+"set relativenumber              " 行号以相对当前行的方式显示，方便跳转
 set showtabline=0               " 隐藏顶部标签栏
 set guioptions-=r               " 隐藏右侧滚动条 
 set guioptions-=L               " 隐藏左侧滚动条
@@ -146,7 +146,7 @@ set iskeyword+=_,$,@,%,#,-      " 带有如下符号的单词不要被换行分�
 " 尽量使用 nnoremap 代替 nmap，比如： :map 递归映射，可以映射的模式：normal, visual, operator-pending
 " nmap j k                      " nmap 是递归映射，会出现不可预期的问题
 " nmap k G                      " 当按下 j 键时，实际上执行的是 G 键
-" let mapleader = ","           " 定义 <Leader> 前缀键由 "\" 变为 ","
+let mapleader = ","           " 定义 <Leader> 前缀键由 "\" 变为 ","
 map Y y$                        " 复制 从光标到行尾 所在范围的文本
 nmap <C-A> ggVG                 " 全选
 
@@ -367,6 +367,9 @@ Plug 'airblade/vim-gitgutter'
 " Search
 Plug 'Yggdroot/LeaderF'                  " 查找文件非常方便
 Plug 'easymotion/vim-easymotion'         " 快速定位
+
+" go config
+Plug 'fatih/vim-go'
 
 " Initialize plugin system
 call plug#end()
