@@ -365,7 +365,7 @@ Plug 'iamcco/markdown-preview.vim'       " Markdown 预览工具
 Plug 'airblade/vim-gitgutter'
 
 " Search
-Plug 'Yggdroot/LeaderF'                  " 查找文件非常方便
+Plug 'Yggdroot/LeaderF',{ 'do': ':LeaderfInstallCExtension'}    " 查找文件非常方便
 Plug 'easymotion/vim-easymotion'         " 快速定位
 
 " go config
@@ -428,7 +428,7 @@ func SetTitle()                          " 定义函数 SetTitle，自动插入�
 	if &filetype == 'sh'
 		call setline(1,          "\#########################################################################")
 		call append(line("."),   "\# File Name: ".expand("%"))
-		call append(line(".")+1, "\# Author: chloneda <chloneda@gmail.com>")
+		call append(line(".")+1, "\# Author: baijian <baijian01@qianxin.com>")
 		call append(line(".")+2, "\# Created Time: ".strftime("%c"))
 		call append(line(".")+3, "\#########################################################################")
 		call append(line(".")+4, "\#!/usr/bin/env bash")
@@ -441,6 +441,43 @@ func SetTitle()                          " 定义函数 SetTitle，自动插入�
 	" 新建文件后，自动定位到文件末尾
 	autocmd BufNewFile * normal G
 endfunc
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" leaderF conf 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" don't show the help in normal mode
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+let g:Lf_ShortcutF = "<leader>ff"
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+" search visually selected text literally
+xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+noremap go :<C-U>Leaderf! rg --recall<CR>
+
+" should use `Leaderf gtags --update` first
+let g:Lf_GtagsAutoGenerate = 0
+let g:Lf_Gtagslabel = 'native-pygments'
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " End
