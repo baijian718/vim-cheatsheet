@@ -368,8 +368,14 @@ Plug 'airblade/vim-gitgutter'
 Plug 'Yggdroot/LeaderF',{ 'do': ':LeaderfInstallCExtension'}    " 查找文件非常方便
 Plug 'easymotion/vim-easymotion'         " 快速定位
 
-" go config
+
+
+" Vim-Go 
 Plug 'fatih/vim-go'
+
+" Gutentags
+Plug 'ludovicchabant/vim-gutentags'
+
 
 " Initialize plugin system
 call plug#end()
@@ -443,40 +449,105 @@ func SetTitle()                          " 定义函数 SetTitle，自动插入�
 endfunc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" leaderF conf 
+" Plug Conf  
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" <Plug-LeaderF>  
+if has('LeaderF')
+	" don't show the help in normal mode
+	let g:Lf_HideHelp = 1
+	let g:Lf_UseCache = 0
+	let g:Lf_UseVersionControlTool = 0
+	let g:Lf_IgnoreCurrentBufferName = 1
 
-" don't show the help in normal mode
-let g:Lf_HideHelp = 1
-let g:Lf_UseCache = 0
-let g:Lf_UseVersionControlTool = 0
-let g:Lf_IgnoreCurrentBufferName = 1
-" popup mode
-let g:Lf_WindowPosition = 'popup'
-let g:Lf_PreviewInPopup = 1
-let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
-let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+	" popup mode
+	let g:Lf_WindowPosition = 'popup'
+	let g:Lf_PreviewInPopup = 1
+	let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+	let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 
-let g:Lf_ShortcutF = "<leader>ff"
-noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
-noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+	let g:Lf_ShortcutF = "<leader>ff"
 
-noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-" search visually selected text literally
-xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
-noremap go :<C-U>Leaderf! rg --recall<CR>
+	nnoremap <leader>f :LeaderfFile ~<cr>
+	" noremap <F2> :LeaderfFunction!<cr>
+	let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git','.hg','.vscode','.wine','.deepinwine','.oh-my-zsh'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+            \}
+ 
+	" 按Esc键退出函数列表
+	let g:Lf_NormalMap = {
+		\ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
+		\ "Buffer": [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
+		\ "Mru":    [["<ESC>", ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
+		\ "Tag":    [["<ESC>", ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
+		\ "Function":    [["<ESC>", ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
+		\ "Colorscheme":    [["<ESC>", ':exec g:Lf_py "colorschemeExplManager.quit()"<CR>']],
+		\ }
+	" let g:Lf_UseCache = 0
 
-" should use `Leaderf gtags --update` first
-let g:Lf_GtagsAutoGenerate = 0
-let g:Lf_Gtagslabel = 'native-pygments'
-noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+	noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+	noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+	noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+	noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+	noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+	noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+	" search visually selected text literally
+	xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+	noremap go :<C-U>Leaderf! rg --recall<CR>
+
+	" should use `Leaderf gtags --update` first
+	let g:Lf_GtagsAutoGenerate = 0
+	let g:Lf_Gtagslabel = 'native-pygments'
+	noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+	noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+	noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+	noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+	noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+
+endif
+
+
+noremap ss <Plug>(easymotion-s2)
+
+" <plug-asyncrun>
+if has('asyncrun')
+	" 自动打开 quickfix window ，高度为 6
+	let g:asyncrun_open = 6
+	" 任务结束时候响铃提醒
+	let g:asyncrun_bell = 1
+endif
+
+" <plug-gtags>
+let $GTAGSLABEL = 'native-pygments'
+let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
+
+" <Plug-Gutentags>
+if has('vim-gutentags')
+	let g:gutentags_define_advanced_commands = 1
+	let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']    
+	let g:gutentags_ctags_tagfile = '.tags'   " 所生成的数据文件的名称
+	let g:gutentags_modules = []   " 同时开启 ctags 和 gtags 支持：
+	if executable('ctags')
+	"	let g:gutentags_modules += ['ctags']
+	endif
+
+	if executable('gtags-cscope') && executable('gtags')
+		let g:gutentags_modules += ['gtags_cscope']
+	endif
+
+	" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+	let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+	" 配置 ctags 的参数，老的 Exuberant-ctags 不能有 --extra=+q，注意
+	let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+	let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+	let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+	" 如果使用 universal ctags 需要增加下面一行，老的 Exuberant-ctags 不能加下一行
+	let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+	" 禁用 gutentags 自动加载 gtags 数据库的行为
+	let g:gutentags_auto_add_gtags_cscope = 0
+endif
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
