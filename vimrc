@@ -428,7 +428,7 @@ au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|
 " 自定义函数
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 新建 .sh，.java 文件，自动插入文件头
-autocmd BufNewFile *.sh,*.java exec ":call SetTitle()"
+autocmd BufNewFile *.sh,*.go exec ":call SetTitle()"
 func SetTitle()                          " 定义函数 SetTitle，自动插入文件头
 	" 如果文件类型为 .sh 文件
 	if &filetype == 'sh'
@@ -452,7 +452,7 @@ endfunc
 " Plug Conf  
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " <Plug-LeaderF>  
-if has('LeaderF')
+if 1
 	" don't show the help in normal mode
 	let g:Lf_HideHelp = 1
 	let g:Lf_UseCache = 0
@@ -464,46 +464,48 @@ if has('LeaderF')
 	let g:Lf_PreviewInPopup = 1
 	let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
 	let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
-
-	let g:Lf_ShortcutF = "<leader>ff"
-
-	nnoremap <leader>f :LeaderfFile ~<cr>
-	" noremap <F2> :LeaderfFunction!<cr>
 	let g:Lf_WildIgnore = {
             \ 'dir': ['.svn','.git','.hg','.vscode','.wine','.deepinwine','.oh-my-zsh'],
             \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
             \}
  
-	" 按Esc键退出函数列表
-	let g:Lf_NormalMap = {
-		\ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
-		\ "Buffer": [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
-		\ "Mru":    [["<ESC>", ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
-		\ "Tag":    [["<ESC>", ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
-		\ "Function":    [["<ESC>", ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
-		\ "Colorscheme":    [["<ESC>", ':exec g:Lf_py "colorschemeExplManager.quit()"<CR>']],
-		\ }
-	" let g:Lf_UseCache = 0
 
-	noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
-	noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-	noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-	noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-
-	noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-	noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-	" search visually selected text literally
-	xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
-	noremap go :<C-U>Leaderf! rg --recall<CR>
-
-	" should use `Leaderf gtags --update` first
 	let g:Lf_GtagsAutoGenerate = 0
-	let g:Lf_Gtagslabel = 'native-pygments'
-	noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+    "let g:Lf_Gtagslabel = 'native-pygments'
+
+	"Yggdroot/LeaderF
+	"按键映射前缀: <leader>f。
+
+	nnoremap <silent> <leader>ff :Leaderf file<CR>  	" 文件搜索。
+	"历史打开过的文件。
+	nnoremap <silent> <leader>fm :Leaderf mru<CR>
+	"Buffer。
+	nnoremap <silent> <leader>fb :Leaderf buffer<CR>
+	"函数搜索（仅当前文件里）。
+	nnoremap <silent> <leader>fF :Leaderf function<CR>
+	"grep模糊搜索。
+	nnoremap <silent> <leader>fg :Leaderf rg<CR>
+	"搜索行。
+	nnoremap <silent> <leader>fl :Leaderf line<CR>
+
+	"通过Leaderf rg在当前缓存中搜索光标下的字符串。
+	noremap <leader>f<c-b> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
+	"通过Leaderf rg搜索光标下的字符串。
+	noremap <leader>f<c-f> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR><CR>
+	"打开最近一次Leaderf rg搜索窗口。
+	noremap <leader>fr :<C-U>Leaderf! rg --recall<CR>
+
+	"搜索当前光标下函数引用，如果搜索结果只有一个则直接跳转。
+	noremap <leader>fc :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+	"搜索当前光标下函数定义，如果搜索结果只有一个则直接跳转。
 	noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-	noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+	"打开上一次gtags搜索窗口。
+	noremap <leader>fR :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+	"跳转到下一个搜索结果。
 	noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+	"跳转到上一个搜索结果。
 	noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+
 
 endif
 
@@ -511,7 +513,7 @@ endif
 noremap ss <Plug>(easymotion-s2)
 
 " <plug-asyncrun>
-if has('asyncrun')
+if  1
 	" 自动打开 quickfix window ，高度为 6
 	let g:asyncrun_open = 6
 	" 任务结束时候响铃提醒
@@ -519,11 +521,14 @@ if has('asyncrun')
 endif
 
 " <plug-gtags>
-let $GTAGSLABEL = 'native-pygments'
-let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
+let $GTAGSLABEL = 'pygments'
+" let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
+let $GTAGSCONF = '/home/baijian01/.globalrc'
+
 
 " <Plug-Gutentags>
-if has('vim-gutentags')
+if 1 
+	let g:gutentags_trace = 1
 	let g:gutentags_define_advanced_commands = 1
 	let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']    
 	let g:gutentags_ctags_tagfile = '.tags'   " 所生成的数据文件的名称
@@ -538,6 +543,8 @@ if has('vim-gutentags')
 
 	" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
 	let g:gutentags_cache_dir = expand('~/.cache/tags')
+	 
+
 
 	" 配置 ctags 的参数，老的 Exuberant-ctags 不能有 --extra=+q，注意
 	let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
